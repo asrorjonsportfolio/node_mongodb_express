@@ -13,6 +13,9 @@ module.exports = {
             mail,
             phone
         } = req.body
+        console.log(req.body)
+        console.log(password)
+        console.log(fullname)
         let db = database.getDb(process.env.DB)
 
         let existmail = await db
@@ -58,12 +61,13 @@ module.exports = {
                 const token = jwt.sign({
                     username,
                     password: existuser.password
-                }, process.env.JWT_KEY)
+                }, process.env.JWT_KEY, {expiresIn: process.env.JWT_EXPIRES_IN})
                 console.log(token)
                 res
                     .status(201)
                     .send({
                         userdata: {
+                            id: existuser._id,
                             fullname: existuser.fullname,
                             username: existuser.username,
                             mail: existuser.mail,

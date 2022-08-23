@@ -1,10 +1,17 @@
 const express = require('express')
 const app = express()
+const bodyparser = require('body-parser')
 const db = require('./db')
 require('dotenv').config()
 const port = process.env.PORT
 
-app.use('/', require('./routers/router'))
+//app.use(bodyparser.urlencoded({extended: false}))
+app.use(bodyparser.json())
+app.get('/', (req, res) => {
+    res.send('main page')
+})
+app.use('/tweet', require('./routers/routerOfTweet'))
+app.use('/auth', require('./routers/routerOfAuth'))
 
 async function start() {
     db.connectToServer(function (err) {
