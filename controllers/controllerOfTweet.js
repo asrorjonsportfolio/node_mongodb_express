@@ -53,20 +53,22 @@ module.exports = {
             res.status(201).send('tweet has been added')
         } else res.status(201).send('check false')
     },
-    addcomment: async function (req, res) {
-        const {newcomment, tweetsid} = req.body
+    addcomment: async function (req, res, next) {
+        const {tweetsid} = req.params
+        const {comment} = req.body
         const {token, usersid, username} = req.cookies
         if (check(username, usersid, token)) {
             let db = database.getDb(process.env.DB)
             await db
                 .collection('comments')
                 .insertOne({
-                    comment: newcomment,
+                    comment,
                     usersid,
                     tweetsid,
                     data: Date.now()
                 })
             res.status(201).send('comment has been added')
+            next()
         }
     },
     liketweet: function (req, res) {
