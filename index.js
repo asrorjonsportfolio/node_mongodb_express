@@ -1,12 +1,14 @@
 const express = require('express')
 const app = express()
 const bodyparser = require('body-parser')
+const cookieparser = require('cookie-parser')
 const db = require('./db')
 require('dotenv').config()
 const port = process.env.PORT
 
 //app.use(bodyparser.urlencoded({extended: false}))
 app.use(bodyparser.json())
+app.use(cookieparser())
 app.get('/', (req, res) => {
     res.send('main page')
 })

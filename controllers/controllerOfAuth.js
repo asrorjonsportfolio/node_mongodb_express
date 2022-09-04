@@ -54,20 +54,38 @@ module.exports = {
         const existuser = await db
             .collection('users')
             .findOne({username})
-
         if (existuser) {
             const ispasswordvalid = await bcrypt.compare(password, existuser.password)
             if (ispasswordvalid) {
-                const token = jwt.sign({
-                    username,
-                    password: existuser.password
-                }, process.env.JWT_KEY, {expiresIn: process.env.JWT_EXPIRES_IN})
-                console.log(token)
+                const token = jwt.sign(
+                    {
+                        username: existuser.username,
+                        usersid: existuser._id.toString()
+                    },
+                    process.env.JWT_KEY,
+                    {
+                        expiresIn: process.env.JWT_EXPIRES_IN
+                    })
                 res
                     .status(201)
+                    .cookie('token', token, {
+                        path: '/',
+                        expires: new Date(Date.now() + 60 * 60 * 1000),
+                        httpOnly: true
+                    })
+                    .cookie('usersid', existuser._id.toString(), {
+                        path: '/',
+                        expires: new Date(Date.now() + 60 * 60 * 1000),
+                        httpOnly: true,
+                    })
+                    .cookie('username', existuser.username, {
+                        path: '/',
+                        expires: new Date(Date.now() + 60 * 60 * 1000),
+                        httpOnly: true
+                    })
                     .send({
                         userdata: {
-                            id: existuser._id,
+                            usersid: existuser._id.toString(),
                             fullname: existuser.fullname,
                             username: existuser.username,
                             mail: existuser.mail,
